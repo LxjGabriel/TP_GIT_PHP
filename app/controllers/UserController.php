@@ -17,8 +17,10 @@ class UserController {
             $password = $_POST['password'];
 
             if ($this->userModel->register($name, $email, $password)) {
-                header("Location: /login.php");
+                header("Location: /login");
                 exit();
+            } else {
+                echo "Erreur lors de l'inscription.";
             }
         }
     }
@@ -31,15 +33,18 @@ class UserController {
             $user = $this->userModel->login($email, $password);
             if ($user) {
                 $_SESSION['user_id'] = $user['id'];
-                header("Location: /tasks.php");
+                header("Location: /tasks");
                 exit();
+            } else {
+                echo "Identifiants incorrects.";
             }
         }
     }
 
     public function logout() {
         session_destroy();
-        header("Location: /");
+        header("Location: /login");
+        exit();
     }
 }
 ?>

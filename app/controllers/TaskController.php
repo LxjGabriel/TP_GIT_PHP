@@ -9,8 +9,7 @@ class TaskController {
     }
 
     public function showTasks() {
-        $tasks = $this->taskModel->getTasks($_SESSION['user_id']);
-        include 'app/Views/tasks.php';
+        return $this->taskModel->getTasks($_SESSION['user_id']);
     }
 
     public function addTask() {
@@ -20,8 +19,23 @@ class TaskController {
             $status = $_POST['status'];
             $userId = $_SESSION['user_id'];
 
-            $this->taskModel->addTask($title, $description, $status, $userId);
-            header("Location: /tasks.php");
+            if ($this->taskModel->addTask($title, $description, $status, $userId)) {
+                header("Location: /tasks");
+            } else {
+                echo "Erreur lors de l'ajout de la tâche.";
+            }
+        }
+    }
+
+    public function deleteTask() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $taskId = $_POST['task_id'];
+
+            if ($this->taskModel->deleteTask($taskId)) {
+                header("Location: /tasks");
+            } else {
+                echo "Erreur lors de la suppression.";
+            }
         }
     }
 }
