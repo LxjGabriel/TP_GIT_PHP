@@ -1,11 +1,15 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: /login");
     exit();
 }
 
-require_once 'app/Controllers/TaskController.php';
+require_once __DIR__ . '/../Controllers/TaskController.php';
+
 $taskController = new TaskController($pdo);
 $tasks = $taskController->showTasks();
 ?>
@@ -34,7 +38,21 @@ $tasks = $taskController->showTasks();
     <ul>
         <?php foreach ($tasks as $task): ?>
             <li>
-                <strong><?= $task['title'] ?></strong> - <?= $task['status'] ?>
+                <strong><?= htmlspecialchars($task['title']) ?></strong> - 
+                <?= htmlspecialchars($task['status']) ?>
+
+                <!-- cambio de estado -->
+                <form action="/tasks/update" method="POST" style="display:inline;">
+                    <input type="hidden" name="task_id" value="<?= $task['id'] ?>">
+                    <select name="status">
+                        <option value="À faire" <?= $task['status'] == 'À faire' ? 'selected' : '' ?>>À faire</option>
+                        <option value="En cours" <?= $task['status'] == 'En cours' ? 'selected' : '' ?>>En cours</option>
+                        <option value="Terminé" <?= $task['status'] == 'Terminé' ? 'selected' : '' ?>>Terminé</option>
+                    </select>
+                    <button type="submit">Modifier</button>
+                </form>
+
+                <!-- borrar tarea -->
                 <form action="/tasks/delete" method="POST" style="display:inline;">
                     <input type="hidden" name="task_id" value="<?= $task['id'] ?>">
                     <button type="submit">Supprimer</button>
