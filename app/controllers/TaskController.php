@@ -1,5 +1,5 @@
 <?php
-require_once 'app/Models/Task.php';
+require_once __DIR__ . '/../Models/Task.php';
 
 class TaskController {
     private $taskModel;
@@ -8,9 +8,12 @@ class TaskController {
         $this->taskModel = new Task($pdo);
     }
 
+
+
     public function showTasks() {
         return $this->taskModel->getTasks($_SESSION['user_id']);
     }
+
 
     public function addTask() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -27,16 +30,36 @@ class TaskController {
         }
     }
 
-    public function deleteTask() {
+    public function updateTask() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $taskId = $_POST['task_id'];
-
-            if ($this->taskModel->deleteTask($taskId)) {
+            $status = $_POST['status'];
+    
+            if ($this->taskModel->updateStatus($taskId, $status)) {
                 header("Location: /tasks");
+                exit();
             } else {
-                echo "Erreur lors de la suppression.";
+                echo "Erreur lors de la mise à jour.";
             }
         }
     }
+    
+
+
+
+
+    public function deleteTask() {
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $taskId = $_POST['task_id'];
+
+        if ($this->taskModel->deleteTask($taskId)) {
+            header("Location: /tasks");
+            exit();
+        } else {
+            echo "Erreur lors de la suppression.";
+        }
+    }
+}
+
 }
 ?>
