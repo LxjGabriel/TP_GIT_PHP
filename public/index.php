@@ -3,7 +3,10 @@ require_once '../config/database.php';
 require_once '../app/Controllers/UserController.php';
 require_once '../app/Controllers/TaskController.php';
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 
 $userController = new UserController($pdo);
 $taskController = new TaskController($pdo);
@@ -26,7 +29,10 @@ if ($uri === '/register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $taskController->deleteTask();
 } elseif ($uri === '/logout') {
     $userController->logout();
-} else {
-    echo "Page non trouvée";
+}elseif ($uri === '/tasks/update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $taskController->updateTask();
+}
+ else {
+    echo "ERREUR, page non trouvé";
 }
 ?>
